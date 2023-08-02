@@ -14,6 +14,7 @@
 # Stories
 ## TODO
 - [ ] [[#Scaffold Repository]]
+- [ ] [[#Build a makefile to automate docker builds]]
 - [ ] [[#Dockerize and extend functionality for GATHERER lambda]]
 - [ ] [[#Dockerize and extend functionality for PROCESSOR lambda]]
 - [ ] [[#Consider how to handle multiple lambdas uploading to RDS at one time]]
@@ -35,6 +36,11 @@
 ##### requirements
 * be able to deploy a hello world lambda
 	* the lambda code should be __containerized__
+
+---
+
+### Build a makefile to automate docker builds
+* make a 'function'  that automatically builds docker image with the correct tags, etc. and puts the image in the right place for cdk to use.
 
 ---
 
