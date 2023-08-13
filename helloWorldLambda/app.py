@@ -1,4 +1,8 @@
 import requests
+import json
 
 def lambda_handler(event, context):
-    return "Hello Lambda!"
+    return {
+        'statusCode': 200,
+        'body': json.dumps({'message': 'hello, world.'})
+    }
