@@ -13,9 +13,9 @@ export class APIStack extends cdk.Stack {
         code: DockerImageCode.fromImageAsset(path.join(__dirname, '../../helloWorldLambda')) 
       })
 
-      // const api = new RestApi(this, 'bank-data-pipeline-api');
-      // const test = api.root.addResource('test')
-      // test.addMethod('GET', new LambdaIntegration(testLambda))
+      const api = new RestApi(this, 'bank-data-pipeline-api');
+      const test = api.root.addResource('test')
+      test.addMethod('GET', new LambdaIntegration(testLambda))
 
   }
 }
