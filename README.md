@@ -1,11 +1,4 @@
-# Architecture 
-
-| __lambda name__ | __purpose__                                                                                                        |
-| --------------- | ------------------------------------------------------------------------------------------------------------------ |
-| gatherer        | downloads data from ffiec. unzips it. preliminary data clean. uploads folders to s3. only one of these will exist. |
-| processor       | downloads specific folder from s3. cleans data. uploads it to RDS. many of these will be spun up; 1 per folder.    |
-
-## Questions for Jae
+## Questions 
 * how can I get AWS credentials to the account?
 * what are the naming conventions for tables in the RDS?
 	* this will dictate what metadata we need to preserve
@@ -14,10 +7,11 @@
 # Stories
 ## TODO
 
-- [x] [[#Scaffold Repository]]
-- [ ] [[#Dockerize and extend functionality for GATHERER lambda]]
-- [ ] [[#Dockerize and extend functionality for PROCESSOR lambda]]
-- [ ] [[#Consider how to handle multiple lambdas uploading to RDS at one time]]
+- [x] Scaffold Repository
+- [x] Create quarter_request_generator lambda
+- [ ] Dockerize and extend functionality for quarter_data_collector lambda
+- [ ] Dockerize and extend functionality for PROCESSOR lambda
+- [ ] Consider how to handle multiple lambdas uploading to RDS at one time
 
 ## Leave for Team
 - [ ] upload to database
@@ -38,13 +32,21 @@
 	* the lambda code should be __containerized__
 
 ---
+### Create quarter_request_generator lambda
 
-### Build a makefile to automate docker builds
-* make a 'function'  that automatically builds docker image with the correct tags, etc. and puts the image in the right place for cdk to use.
+##### function
+* given an input of start_year, start_quarter, end_year, end_quarter, generate a list. this list contains the offset number of quarters. for example, 2023 quarter 1 was 2 quarters ago. so it's offset would be -2.
+* for each offset in the list, invoke the quarter_data_collector lambda
 
----
+##### infrastructure
+* build a skeleton for quarter_data_collector lambda
+* give quarter_request_generator permission to invoke it.
 
-### Dockerize and extend functionality for GATHERER lambda
+##### requirements
+* verify the quarter_request_generator can invoke the quarter_data_collector lambda.
+
+
+### Dockerize and extend functionality for quarter_data_collector lambda
 
 ##### function
 * wrap selenium functionality into a python docker lambda image
