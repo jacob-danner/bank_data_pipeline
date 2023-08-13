@@ -13,7 +13,7 @@
 ---
 # Stories
 ## TODO
-- [ ] [[#Scaffold Repository]]
+- [x] [[#Scaffold Repository]]
 - [ ] [[#Dockerize and extend functionality for GATHERER lambda]]
 - [ ] [[#Dockerize and extend functionality for PROCESSOR lambda]]
 - [ ] [[#Consider how to handle multiple lambdas uploading to RDS at one time]]
@@ -30,7 +30,7 @@
 	* create AWS gateway rest API
 	* create an s3 bucket to store the files
 	* create lambda
-* setup GitHub action to deploy infra on push to branch
+* ~~setup GitHub action to deploy infra on push to branch~~
 
 ##### requirements
 * be able to deploy a hello world lambda
