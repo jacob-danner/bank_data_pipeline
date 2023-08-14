@@ -28,7 +28,7 @@ def download_zip(quarter_offset: int):
 
         # select the corresponding quarteer to quarter_offset throught the selctions dropdown
         quarter_selector = Select( driver.find_element(By.XPATH, '//*[@id="DatesDropDownList"]') )
-        desired_quarter = quarter_selector.select_by_index(quarter_offset) 
+        quarter_selector.select_by_index(quarter_offset) 
 
         download_button = driver.find_element(By.XPATH, '//*[@id="Download_0"]')
         download_button.click()
@@ -47,8 +47,10 @@ def lambda_handler(event, context):
     # TODO
     # quarter offset needs grabbed from event
     # unzip the folder
+    quarter_offset = -1
+    quarter_offset = -quarter_offset
     
-    download_zip(quarter_offset=0)
+    download_zip(quarter_offset=quarter_offset)
 
     
     
