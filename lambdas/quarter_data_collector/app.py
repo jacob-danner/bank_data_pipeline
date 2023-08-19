@@ -1,63 +1,64 @@
-# ./venv/bin/python3 app.py
+from file_utils import get_zip_name, unzip, clean_dir
 
 import json
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import Select
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service as ChromeService
-
-from webdriver_manager.chrome import ChromeDriverManager
-
 import os
 import time
 
-def download_zip(quarter_offset: int):
-    cwd = os.getcwd()
-    try:
-        chrome_options = Options()
-        prefs = {'download.default_directory': cwd}
-        chrome_options.add_experimental_option('prefs', prefs)
+from selenium import webdriver
+from tempfile import mkdtemp
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import Select
 
-        driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
 
-        driver.get('https://cdr.ffiec.gov/public/PWS/DownloadBulkData.aspx')
+def download_zip(chrome: webdriver.Chrome, quarter_offset: int):
+    chrome.get('https://cdr.ffiec.gov/public/PWS/DownloadBulkData.aspx')
+    # Select 'Call Reports -- Single Period'
+    report_type_selection = chrome.find_element(By.XPATH, '//*[@id="ListBox1"]/option[1]')
+    report_type_selection.click() 
 
-        type_selection = driver.find_element(By.XPATH, '//*[@id="ListBox1"]/option[1]')
-        type_selection.click() # Call Reports -- single period
+    # select the corresponding quarter based on quarter_offset parameter throught the selctions dropdown
+    quarter_selector = Select( chrome.find_element(By.XPATH, '//*[@id="DatesDropDownList"]') )
+    quarter_selector.select_by_index(quarter_offset)
 
-        # select the corresponding quarteer to quarter_offset throught the selctions dropdown
-        quarter_selector = Select( driver.find_element(By.XPATH, '//*[@id="DatesDropDownList"]') )
-        quarter_selector.select_by_index(quarter_offset) 
+    # click download button
+    download_button = chrome.find_element(By.XPATH, '//*[@id="Download_0"]')
+    download_button.click()
 
-        download_button = driver.find_element(By.XPATH, '//*[@id="Download_0"]')
-        download_button.click()
-
-        time.sleep(4)
-
-        driver.close()
-
-    except:
-        raise Exception('issue scraping data')
+    # wait to give time to download and close browser
+    time.sleep(4)
+    chrome.close()
+    
 
 def lambda_handler(event, context):
-    print('it worked')
-
-
-    # TODO
-    # quarter offset needs grabbed from event
-    # unzip the folder
-    quarter_offset = -1
-    quarter_offset = -quarter_offset
+    # NEED TO GET QUARTER OFFSET FROM EVENT
     
-    download_zip(quarter_offset=quarter_offset)
+    options = webdriver.ChromeOptions()
+    options.binary_location = '/opt/chrome/chrome'
+    options.add_argument('--headless')
+    options.add_argument('--no-sandbox')
+    options.add_argument("--disable-gpu")
+    options.add_argument("--window-size=1280x1696")
+    options.add_argument("--single-process")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--disable-dev-tools")
+    options.add_argument("--no-zygote")
+    options.add_argument(f"--user-data-dir={mkdtemp()}")
+    options.add_argument(f"--data-path={mkdtemp()}")
+    options.add_argument(f"--disk-cache-dir={mkdtemp()}")
+    options.add_argument("--remote-debugging-port=9222")
 
-    
-    
-    
-    return {
-        'statusCode': 200,
-        'body': json.dumps({'message': 'hello, world.'})
-    }
+    chrome = webdriver.Chrome("/opt/chromedriver", options=options)
 
-lambda_handler(1, 1)
+    quarter_offset = 0
+    download_zip(chrome, quarter_offset)
+
+    zip_file_name = get_zip_name()
+
+    data_directory = unzip(zip_file_name)
+
+    clean_dir(data_directory)
+    
+
+    print(os.listdir(data_directory))
+
+    return 'worked'
