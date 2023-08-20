@@ -2,20 +2,21 @@ import os
 from zipfile import ZipFile
 
 def get_zip_name():
-    filenames = os.listdir()
+    filenames = os.listdir('/tmp')
     zip_fname = None
     
     for f_name in filenames:
         if '.zip' in f_name:
-            zip_fname = f_name
+            removed_spaces = f_name.replace(' ', '_')
+            os.rename(f'/tmp/{f_name}', f'/tmp/{removed_spaces}')
+            zip_fname = removed_spaces
 
-    return zip_fname
+    return f'/tmp/{zip_fname}'
 
 def unzip(zip_file):
     zip_id = zip_file.split()[-1] # grabs 03312022.zip
     zip_id = zip_id[:-4] # grabs 03312022
-    cwd = os.getcwd()
-    data_dir = f'{cwd}/{zip_id}'
+    data_dir = f'{zip_id}'
     os.mkdir(data_dir)
 
     with ZipFile(zip_file, 'r') as zip_ref:

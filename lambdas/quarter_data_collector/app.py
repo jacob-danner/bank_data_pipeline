@@ -47,17 +47,29 @@ def lambda_handler(event, context):
     options.add_argument(f"--disk-cache-dir={mkdtemp()}")
     options.add_argument("--remote-debugging-port=9222")
 
+    prefs = {"browser.downloads.dir": "//tmp//", "download.default_directory": "//tmp//", "directory_upgrade": True}
+    options.add_experimental_option('prefs', prefs)
+    
     chrome = webdriver.Chrome("/opt/chromedriver", options=options)
 
     quarter_offset = 0
+
+    print('downloading zip...')
     download_zip(chrome, quarter_offset)
+    print('downloading zip worked.')
+    print(f'/tmp directory: {os.listdir("/tmp")}')
 
+    print('getting zip name...')
     zip_file_name = get_zip_name()
+    print(f'getting zip name worked. zip name: {zip_file_name}')
 
+    print('unzipping zip...')
     data_directory = unzip(zip_file_name)
+    print(f'unzipping zip worked. data was moved to data directory: {data_directory}')
 
+    print('cleaning directory...')
     clean_dir(data_directory)
-    
+    print('cleaning directory worked.')
 
     print(os.listdir(data_directory))
 

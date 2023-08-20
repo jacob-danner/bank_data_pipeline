@@ -9,7 +9,9 @@ export class APIStack extends cdk.Stack {
     super(scope, id, props);
 
       const quarterDataCollectorLambda = new DockerImageFunction(this, 'quarter_data_collector', {
-        code: DockerImageCode.fromImageAsset(path.join(__dirname, '../../lambdas/quarter_data_collector')) 
+        code: DockerImageCode.fromImageAsset(path.join(__dirname, '../../lambdas/quarter_data_collector')) ,
+        timeout: cdk.Duration.seconds(30),
+        memorySize: 2048,
       })
 
       const quarterRequestGeneratorLambda = new DockerImageFunction(this, 'quarter_request_generator', {
